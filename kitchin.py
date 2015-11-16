@@ -1,9 +1,20 @@
 from scipy.optimize import leastsq
 import numpy as np
 
-vols = np.array([13.71, 14.82, 16.0, 17.23, 18.52])
+def loadValues(filename):
+    'Loads a tab txt file with volumes and energies into numpy arrays.'
+    values = np.genfromtxt(filename)
 
-energies = np.array([-56.29, -56.41, -56.46, -56.463, -56.41])
+    vols_array = []
+    energies_array = []
+    for pair in values:
+        vols_array.append(pair[0])
+        energies_array.append(pair[1])
+
+    vols = np.array(vols_array)
+    energies = np.array(energies_array)
+
+    return vols, energies
 
 def Murnaghan(parameters, vol):
     'From Phys. Rev. B 28, 5480 (1983)'
@@ -18,7 +29,10 @@ def objective(pars, y, x):
     err =  y - Murnaghan(pars, x)
     return err
 
+
 x0 = [ -56.0, 0.54, 2.0, 16.5] #initial guess of parameters
+
+vols, energies = loadValues('example.txt')
 
 plsq = leastsq(objective, x0, args=(energies, vols))
 
